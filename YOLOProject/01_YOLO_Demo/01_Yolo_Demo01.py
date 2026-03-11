@@ -14,7 +14,8 @@ def main():
     # ---------------------------------------------------------
     print("\n[场景 A] 开始进行图片检测...")
     # 替换为你本地的图片路径，或者使用网络URL
-    source_img = 'https://ultralytics.com/images/bus.jpg'
+    # source_img = 'https://ultralytics.com/images/bus.jpg'
+    source_img = './bus.jpg'
 
     # 执行预测
     # save=True: 保存结果图到 runs/detect/predict
@@ -49,18 +50,19 @@ def main():
 
         # 执行推理
         # stream=True 对于视频流/摄像头非常重要，它可以生成器模式返回结果，节省内存
-        results = model.predict(source=frame, stream=True, verbose=False)
+        results = model.predict(source=frame, stream=True, verbose=True)
 
         # 获取当前帧的结果
-        result = results[0]
+        for result in results:
+            # 在这里处理每一帧的结果
+            # 绘制结果
+            annotated_frame = result.plot()
 
-        # 绘制结果 (YOLOv8自带绘图功能，也可以手动用cv2画)
-        annotated_frame = result.plot()
+            # 显示画面
+            cv2.imshow("YOLOv8 Detection", annotated_frame)
 
-        # 显示画面
-        cv2.imshow("YOLOv8 Detection", annotated_frame)
-
-        # 按 'q' 退出
+        # 按 'q' 退出 (注意：cv2.waitKey 需要在循环外或确保每帧都调用)
+        # 由于上面的 for 循环每帧只执行一次，放在这里没问题
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
